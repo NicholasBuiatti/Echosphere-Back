@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\SocialUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
 class SocialUserController extends Controller
 {
     /**
@@ -26,8 +25,14 @@ class SocialUserController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'nullable|email|unique:social_users',
             'number_phone' => 'nullable|string|max:20|unique:social_users',
-            'password' => 'required|min:8|confirmed'
+            //confirmed crea in automatico la voce password_confirmation che viene inviata poi dal front-end
+            'password' => 'required|min:8|confirmed',
         ]);
+
+        // Controlla se password e password_confirmation sono uguali
+        if ($request->password !== $request->password_confirmation) {
+            return response()->json(['error' => 'Le password non corrispondono.'], 422);
+        }
 
         // Controlla che almeno uno tra email o number_phone sia presente
         if (!$request->filled('email') && !$request->filled('number_phone')) {
