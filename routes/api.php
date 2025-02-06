@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\SocialUserController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -20,3 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/register', [SocialUserController::class, 'register']);
+// verifica email
+Route::get('/verify-email/{token}', [VerificationController::class, 'verifyEmail']);

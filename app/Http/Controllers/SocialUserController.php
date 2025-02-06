@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\SocialUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyEmail;
+
 class SocialUserController extends Controller
 {
     /**
@@ -15,16 +19,12 @@ class SocialUserController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:social_users',
-            'number_phone' => 'nullable|string|max:20|unique:social_users',
+            'email' => 'required|email|unique:social_users',
             //confirmed crea in automatico la voce password_confirmation che viene inviata poi dal front-end
             'password' => 'required|min:8|confirmed',
         ]);
@@ -34,18 +34,17 @@ class SocialUserController extends Controller
             return response()->json(['error' => 'Le password non corrispondono.'], 422);
         }
 
-        // Controlla che almeno uno tra email o number_phone sia presente
-        if (!$request->filled('email') && !$request->filled('number_phone')) {
-            return response()->json(['error' => 'Devi fornire almeno un indirizzo email o un numero di telefono.'], 422);
-        }
-
         $user = SocialUser::create([
             'name' => $request->name,
             'surname' => $request->surname,
             'email' => $request->email,
-            'number_phone' => $request->number_phone,
             'password' => Hash::make($request->password),
+            'verification_token' => $request->email ? Str::random(60) : null,
         ]);
+
+        if ($user->email) {
+            Mail::to($user->email)->send(new VerifyEmail($user));
+        }
 
         return response()->json(['message' => 'Registration succesful', 'user' => $user]);
     }

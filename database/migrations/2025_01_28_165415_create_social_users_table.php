@@ -17,13 +17,17 @@ return new class extends Migration
             $table->string('surname');
             $table->string('nickname')->nullable();
             $table->date('birth_date')->nullable();
-            $table->string('email')->nullable();
-            $table->string('number_phone', 20)->nullable();
+            $table->string('email');
+            $table->string('number_phone', 20)->nullable()->unique();
             $table->string('password');
             $table->string('avatar_url')->nullable();
             $table->text('bio')->nullable();
             $table->enum('gender', ['male', 'female', 'non-binary', 'other'])->nullable();            
             $table->enum('status', ['active', 'suspended', 'banned'])->default('active');
+            // colonne per email di conferma
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('verification_token')->nullable();
+
             $table->timestamps();
         });
     }
