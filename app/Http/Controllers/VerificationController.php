@@ -13,7 +13,7 @@ class VerificationController extends Controller
         $user = SocialUser::where('verification_token', $token)->first();
         //se non c'è l'utente restituisci questo messaggio
         if (!$user) {
-            return response()->json(['error' => 'Token non valido o già usato.'], 400);
+            return redirect('http://localhost:5173/login?verified=false');
         }
 
         // Segna l'email come verificata
@@ -21,7 +21,7 @@ class VerificationController extends Controller
         $user->verification_token = null;
         $user->save();
 
-        return response()->json(['message' => 'Email verificata con successo! Ora puoi accedere.']);
+        return redirect('http://localhost:5173/login?verified=true');
     }
 }
 

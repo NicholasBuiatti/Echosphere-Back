@@ -46,7 +46,7 @@ class SocialUserController extends Controller
             Mail::to($user->email)->send(new VerifyEmail($user));
         }
 
-        return response()->json(['message' => 'Registration succesful', 'user' => $user]);
+        return response()->json(['message' => 'Registrazione completata con successo!', 'success' => true, 'user' => $user]);
     }
 
     /**
