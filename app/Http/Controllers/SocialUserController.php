@@ -34,6 +34,15 @@ class SocialUserController extends Controller
             return response()->json(['error' => 'Le password non corrispondono.'], 422);
         }
 
+        $emailExists = SocialUser::where('email', $request->email)->exists();
+
+        if ($emailExists) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Questa email è già registrata.'
+            ], 400);  // Status code 400 per errore
+        }
+
         $user = SocialUser::create([
             'name' => $request->name,
             'surname' => $request->surname,
