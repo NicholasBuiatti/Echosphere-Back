@@ -11,7 +11,7 @@ class VerificationController extends Controller
     {
         // Trova l'utente con il token di verifica
         $user = SocialUser::where('verification_token', $token)->first();
-
+        //se non c'è l'utente restituisci questo messaggio
         if (!$user) {
             return response()->json(['error' => 'Token non valido o già usato.'], 400);
         }
