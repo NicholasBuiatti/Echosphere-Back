@@ -21,6 +21,20 @@ class SocialUserController extends Controller
 
     public function register(Request $request)
     {
+        $emailExists = SocialUser::where('email', $request->email)->exists();
+
+        if ($emailExists) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Questa email è già registrata.'
+            ], 400);  // Status code 400 per errore
+        }
+        
+        // Controlla se password e password_confirmation sono uguali
+        if ($request->password !== $request->password_confirmation) {
+            return response()->json(['error' => 'Le password non corrispondono.'], 422);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -28,20 +42,6 @@ class SocialUserController extends Controller
             //confirmed crea in automatico la voce password_confirmation che viene inviata poi dal front-end
             'password' => 'required|min:8|confirmed',
         ]);
-
-        // Controlla se password e password_confirmation sono uguali
-        if ($request->password !== $request->password_confirmation) {
-            return response()->json(['error' => 'Le password non corrispondono.'], 422);
-        }
-
-        $emailExists = SocialUser::where('email', $request->email)->exists();
-
-        if ($emailExists) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Questa email è già registrata.'
-            ], 400);  // Status code 400 per errore
-        }
 
         $user = SocialUser::create([
             'name' => $request->name,
